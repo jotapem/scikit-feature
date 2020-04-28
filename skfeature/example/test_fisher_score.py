@@ -1,5 +1,5 @@
 import scipy.io
-from sklearn import cross_validation
+from sklearn.model_selection import KFold
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from skfeature.function.similarity_based import fisher_score
@@ -10,19 +10,20 @@ def main():
     mat = scipy.io.loadmat('../data/COIL20.mat')
     X = mat['X']    # data
     X = X.astype(float)
+    print(X[:10])
     y = mat['Y']    # label
     y = y[:, 0]
     n_samples, n_features = X.shape    # number of samples and number of features
 
     # split data into 10 folds
-    ss = cross_validation.KFold(n_samples, n_folds=10, shuffle=True)
+    ss = KFold(n_splits=10, shuffle=True)
 
     # perform evaluation on classification task
     num_fea = 100    # number of selected features
     clf = svm.LinearSVC()    # linear SVM
 
     correct = 0
-    for train, test in ss:
+    for train, test in ss.split(X):
         # obtain the score of each feature on the training set
         score = fisher_score.fisher_score(X[train], y[train])
 

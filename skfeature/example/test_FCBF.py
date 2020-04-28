@@ -1,6 +1,6 @@
 import scipy.io
 from sklearn.metrics import accuracy_score
-from sklearn import cross_validation
+from sklearn.model_selection import KFold
 from sklearn import svm
 from skfeature.function.information_theoretical_based import FCBF
 
@@ -15,17 +15,19 @@ def main():
     n_samples, n_features = X.shape    # number of samples and number of features
 
     # split data into 10 folds
-    ss = cross_validation.KFold(n_samples, n_folds=10, shuffle=True)
+    ss = KFold(n_splits=10, shuffle=True)
 
     # perform evaluation on classification task
     num_fea = 10    # number of selected features
     clf = svm.LinearSVC()    # linear SVM
 
     correct = 0
-    for train, test in ss:
+    for train, test in ss.split(X):
         # obtain the index of each feature on the training set
-        idx = FCBF.fcbf(X[train], y[train], n_selected_features=num_fea)
-
+        for num_fea in range(10):
+            idx = FCBF.fcbf(X[train], y[train])
+            idx = idx[0]
+            print(num_fea, len(idx), idx, n_features)
         # obtain the dataset on the selected features
         features = X[:, idx[0:num_fea]]
 

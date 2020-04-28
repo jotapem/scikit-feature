@@ -25,6 +25,7 @@ def main():
     for train, test in ss:
         # obtain the index of each feature on the training set
         idx,_,_ = CMIM.cmim(X[train], y[train], n_selected_features=num_fea)
+        assert len(idx) == num_fea # not opt point
 
         # obtain the dataset on the selected features
         features = X[:, idx[0:num_fea]]

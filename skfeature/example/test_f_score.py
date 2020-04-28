@@ -1,6 +1,6 @@
 import scipy.io
 from sklearn.metrics import accuracy_score
-from sklearn import cross_validation
+from sklearn.model_selection import KFold
 from sklearn import svm
 from skfeature.function.statistical_based import f_score
 
@@ -15,14 +15,14 @@ def main():
     n_samples, n_features = X.shape    # number of samples and number of features
 
     # split data into 10 folds
-    ss = cross_validation.KFold(n_samples, n_folds=10, shuffle=True)
+    ss = KFold(n_splits=10, shuffle=True)
 
     # perform evaluation on classification task
     num_fea = 100    # number of selected features
     clf = svm.LinearSVC()    # linear SVM
 
     correct = 0
-    for train, test in ss:
+    for train, test in ss.split(X):
         # obtain the f-score of each feature
         score = f_score.f_score(X, y)
 

@@ -2,7 +2,7 @@ import scipy.io
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from skfeature.function.statistical_based import gini_index
-from sklearn import cross_validation
+from sklearn.model_selection import KFold
 
 
 def main():
@@ -15,19 +15,21 @@ def main():
     n_samples, n_features = X.shape    # number of samples and number of features
 
     # split data into 10 folds
-    ss = cross_validation.KFold(n_samples, n_folds=10, shuffle=True)
+    ss = KFold(n_splits=10, shuffle=True)
 
     # perform evaluation on classification task
     num_fea = 100    # number of selected features
     clf = svm.LinearSVC()    # linear SVM
 
     correct = 0
-    for train, test in ss:
+    for train, test in ss.split(X):
         # obtain the gini_index score of each feature
         score = gini_index.gini_index(X[train], y[train])
 
         # rank features in descending order according to score
         idx = gini_index.feature_ranking(score)
+        print(idx)
+        assert len(idx) == n_features # point of opt
 
         # obtain the dataset on the selected features
         selected_features = X[:, idx[0:num_fea]]
